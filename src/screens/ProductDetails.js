@@ -1,10 +1,14 @@
+// src/screens/ProductDetails.js
 import React from 'react';
-import { StyleSheet, View, Text, Image, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
 import { FontAwesome } from '@expo/vector-icons'; 
+import { addItem } from '../store/cartSlice';
 
 const ProductDetails = ({ route }) => {
   const navigation = useNavigation();
+  const dispatch = useDispatch();
   const { product } = route.params;
 
   const handleBackPress = () => {
@@ -12,16 +16,21 @@ const ProductDetails = ({ route }) => {
   };
 
   const handleAddToBasket = () => {
-    console.log('Product added to basket');
+    dispatch(addItem({
+      id: product.id,
+      name: product.title,
+      price: product.price,
+      image: product.image,
+    }));
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.heading}>Product Details</Text>
       <Image source={{ uri: product.image }} style={styles.image} />
       <Text style={styles.title}>{product.title}</Text>
       <Text style={styles.price}>
-       Price: ${product.price} | Rating: {product.rating.rate} | Sales: {product.rating.count}
+        Price: ${product.price} | Rating: {product.rating.rate} | Sales: {product.rating.count}
       </Text>
       <Text style={styles.description}>{product.description}</Text>
       <TouchableOpacity onPress={handleAddToBasket} style={styles.addToBasketButton}>
@@ -32,13 +41,13 @@ const ProductDetails = ({ route }) => {
         <FontAwesome name="arrow-left" size={24} color="white" />
         <Text style={styles.backButtonText}>Back to Products</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: 'white',
     padding: 20,
     paddingTop: 60,
@@ -76,7 +85,7 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 16,
     marginBottom: 20,
-    textAlign: 'justified',
+    textAlign: 'justify',
     borderWidth: 1,
     borderRadius: 10,
     borderColor: 'grey',

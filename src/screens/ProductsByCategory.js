@@ -5,13 +5,15 @@ import { FontAwesome } from '@expo/vector-icons';
 
 const ProductsByCategory = ({ route }) => {
   const navigation = useNavigation();
-  const { category } = route.params;
+  const { category } = route.params || {}; // Destructure with default value {} if route.params is undefined
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchProductsByCategory();
-  }, []);
+    if (category) { // Check if category exists
+      fetchProductsByCategory();
+    }
+  }, [category]); // Re-run effect when category changes
 
   const fetchProductsByCategory = () => {
     setLoading(true);
@@ -42,7 +44,7 @@ const ProductsByCategory = ({ route }) => {
   );
 
   const handleBackPress = () => {
-    navigation.navigate('Home');
+    navigation.goBack();
   };
 
   return (
@@ -59,8 +61,8 @@ const ProductsByCategory = ({ route }) => {
         />
       )}
       <TouchableOpacity onPress={handleBackPress} style={styles.backButton}>
-        <FontAwesome name="arrow-left" size={24} color="white" />
-        <Text style={styles.backButtonText}>Back to Home</Text>
+      <FontAwesome name="arrow-left" size={24} color="white" />
+      <Text style={styles.backButtonText}>Back to Home</Text>
       </TouchableOpacity>
     </View>
   );
