@@ -1,15 +1,25 @@
-// src/screens/ShoppingCart.js
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
-import { removeItem, increaseQuantity, decreaseQuantity } from '../store/cartSlice';
+import { removeItem, increaseQuantity, decreaseQuantity, clearCart } from '../store/cartSlice';
+import { createOrder } from '../store/orderSlice';
 
 const ShoppingCart = () => {
-  const cartItems = useSelector(state => state.cart.items);
+  const cartItems = useSelector((state) => state.cart.items);
   const dispatch = useDispatch();
 
   const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0);
   const totalPrice = cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+
+  const handleCheckout = () => {
+    if (cartItems.length === 0) {
+      Alert.alert('Error', 'Your cart is empty');
+      return;
+    }
+    dispatch(createOrder(cartItems));
+    dispatch(clearCart());
+    Alert.alert('Order Created', 'Your new order has been created.');
+  };
 
   return (
     <View style={styles.container}>
@@ -40,8 +50,11 @@ const ShoppingCart = () => {
                 </TouchableOpacity>
               </View>
             )}
-            keyExtractor={item => item.id.toString()}
+            keyExtractor={(item) => item.id.toString()}
           />
+          <TouchableOpacity style={styles.checkoutButton} onPress={handleCheckout}>
+            <Text style={styles.checkoutButtonText}>Checkout</Text>
+          </TouchableOpacity>
         </View>
       )}
     </View>
@@ -86,6 +99,18 @@ const styles = StyleSheet.create({
   },
   removeButton: {
     color: 'red',
+    fontWeight: 'bold',
+  },
+  checkoutButton: {
+    backgroundColor: 'black',
+    paddingVertical: 15,
+    alignItems: 'center',
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  checkoutButtonText: {
+    color: 'white',
+    fontSize: 18,
     fontWeight: 'bold',
   },
 });
